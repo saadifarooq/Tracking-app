@@ -81,24 +81,52 @@ def set_active_po_file(path):
 
 def read_table(path):
     path_str = str(path)
+
+    if not Path(path_str).exists():
+        raise ValueError(f"File not found: {path_str}")
+
+    if Path(path_str).stat().st_size == 0:
+        raise ValueError(f"File is empty: {path_str}")
+
     ext = path_str.rsplit(".", 1)[-1].lower()
 
-    if ext == "csv":
-        return pd.read_csv(
-            path_str,
-            dtype=str,
-            keep_default_na=False
-        )
+    try:
+        # CSV files
+        if ext == "csv":
+            return pd.read_csv(
+                path_str,
+                dtype=str,
+                keep_default_na=False
+            )
 
-    # Excel files
-    return pd.read_excel(
-        path_str,
-        sheet_name="Po Details",
-        dtype=str,
-        keep_default_na=False,
-        engine="openpyxl"
-    )
+        # Excel files
+        if ext in ["xlsx", "xls"]:
 
+            excel_file = pd.ExcelFile(path_str, engine="openpyxl")
+
+            # Use Po Details sheet if it exists
+            if "Po Details" in excel_file.sheet_names:
+                return pd.read_excel(
+                    path_str,
+                    sheet_name="Po Details",
+                    dtype=str,
+                    keep_default_na=False,
+                    engine="openpyxl"
+                )
+
+            # Otherwise load first sheet
+            return pd.read_excel(
+                path_str,
+                sheet_name=0,
+                dtype=str,
+                keep_default_na=False,
+                engine="openpyxl"
+            )
+
+        raise ValueError(f"Unsupported file type: {ext}")
+
+    except Exception as exc:
+        raise ValueError(f"Could not read file {path_str}: {exc}")
 def now_stamp():
     return time.strftime("%Y-%m-%d %H:%M:%S")
 
