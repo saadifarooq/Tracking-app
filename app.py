@@ -82,10 +82,22 @@ def set_active_po_file(path):
 def read_table(path):
     path_str = str(path)
     ext = path_str.rsplit(".", 1)[-1].lower()
-    if ext == "csv":
-        return pd.read_csv(path_str, dtype=str, keep_default_na=False)
-    return pd.read_excel(path_str, dtype=str, keep_default_na=False)
 
+    if ext == "csv":
+        return pd.read_csv(
+            path_str,
+            dtype=str,
+            keep_default_na=False
+        )
+
+    # Excel files
+    return pd.read_excel(
+        path_str,
+        sheet_name="Po Details",
+        dtype=str,
+        keep_default_na=False,
+        engine="openpyxl"
+    )
 
 def now_stamp():
     return time.strftime("%Y-%m-%d %H:%M:%S")
