@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key-in-render")
 
-MASTER_FILE = os.environ.get("MASTER_FILE", "master.xlsx")
+MASTER_FILE = os.environ.get("MASTER_FILE", "master.csv")
 DEFAULT_PO_FILE = os.environ.get("PO_FILE", "PO_Data1.xlsx")
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/data/uploads" if Path("/data").exists() else "uploads"))
 ACTIVE_PO_POINTER = UPLOAD_DIR / "active_po_file.txt"
